@@ -52,11 +52,6 @@ sub handle_doc_end {
     my $meta = $self->{'html_quoted_parser'};
     pop @{ $meta->{'result'} } if ref $meta->{'result'}[-1] eq 'HASH' && !keys %{ $meta->{'result'}[-1] };
     $self->organize( $meta->{'result'} );
-
-    use Data::Dumper;
-    print Dumper( $meta->{'result'} );
-
-    
 }
 
 sub organize {
@@ -128,7 +123,6 @@ my $re_quoter     = qr{ $re_quote_chunk (?:[ \\t]* $re_quote_chunk)* }x;
 
 sub handle_start {
     my ($self, $tag, $attr, $attrseq, $text) = @_;
-    print "start $tag\n";
 
     my $meta = $self->{'html_quoted_parser'};
     if ( $meta->{'in'}{'br'} ) {
@@ -176,7 +170,6 @@ sub handle_start {
 
 sub handle_end {
     my ($self, $tag, $text) = @_;
-    print "end  $tag\n";
 
     my $meta = $self->{'html_quoted_parser'};
 
