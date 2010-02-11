@@ -4,6 +4,8 @@ use warnings;
 
 package HTML::Quoted;
 
+our $VERSION = '0.01';
+
 =head1 NAME
 
 HTML::Quoted - extract structure of quoted HTML mail message
