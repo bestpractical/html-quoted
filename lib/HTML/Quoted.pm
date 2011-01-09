@@ -10,9 +10,67 @@ our $VERSION = '0.02';
 
 HTML::Quoted - extract structure of quoted HTML mail message
 
+=head1 SYNOPSIS
+
+    use HTML::Quoted;
+    my $html = '...';
+    my $struct = HTML::Quoted->extract( $html );
+
 =head1 DESCRIPTION
 
-No description, yet. Very experimental. See also L<Text::Quoted>.
+Parses and extracts quotation structure out of a HTML message.
+Purpose and returned structures are very similar to
+L<Text::Quoted>.
+
+=head1 SUPPORTED FORMATS
+
+Variouse MUAs use quite different approaches for quoting in mails.
+
+Some use I<blockquote> tag and it's quite easy to parse.
+
+Some wrap text into I<p> tags and add '>' in the beginning of the
+paragraphs.
+
+Things gettign messier when it's an HTML reply on plain text mail
+thread.
+
+If B<you found format> that is not supported then file a bug report
+via rt.cpan.org with as short as possible example. B<Test file>
+is even better. Test file with patch is the best. Not obviouse patches
+without tests suck.
+
+=head1 METHODS
+
+=head2 extract
+
+    my $struct = HTML::Quoted->extract( $html );
+
+Takes a string with HTML and returns array reference. Each element
+in the array either array or hash. For example:
+
+
+    [
+        { 'raw' => 'Hi,' },
+        { 'raw' => '<div><br><div>On date X wrote:<br>' },
+        [
+             { 'raw' => '<blockquote>' },
+             { 'raw' => 'Hello,' },
+             { 'raw' => '<div>How are you?</div>' },
+             { 'raw' => '</blockquote>' }
+        ],
+        ...
+    ]
+
+Hashes represent a part of the html. The following keys are
+meaningful at the moment:
+
+=over 4
+
+=item * raw - raw HTML
+
+=item * quoter_raw, quoter - raw and decoded (entities are converted) quoter if block is prefixed with quoting characters
+
+=back
 
 =cut
 
