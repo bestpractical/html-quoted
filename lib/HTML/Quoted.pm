@@ -199,8 +199,11 @@ sub handle_end {
     }
     elsif ( !$INLINE_TAG{ $tag } ) {
         $meta->{'in'}{'block'}[-1]--;
-        push @{ $stack->[-1] }, $meta->{'current'} = {}
-            unless $meta->{'in'}{'block'}[-1];
+        if ( $meta->{'in'}{'block'}[-1] ) {
+            $meta->{'current'}{'block'} = 1;
+        } else {
+            push @{ $stack->[-1] }, $meta->{'current'} = {};
+        }
     }
 }
 
