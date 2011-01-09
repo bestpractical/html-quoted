@@ -187,7 +187,7 @@ sub handle_end {
 
     if ( $tag eq 'blockquote' ) {
         pop @$stack;
-        push @{ $stack->[-1] }, $meta->{'current'} = { quote => 1 };
+        push @{ $stack->[-1] }, $meta->{'current'} = {};
         $meta->{'in'}{'quote'}--;
     }
     elsif ( $tag eq 'br' ) {
