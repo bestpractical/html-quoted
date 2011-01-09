@@ -194,6 +194,9 @@ sub handle_end {
         $meta->{'in'}{'br'} = 0;
         push @{ $meta->{'stack'}[-1] }, $meta->{'current'} = {}
     }
+    elsif ( $tag eq 'p' ) {
+        push @{ $meta->{'stack'}[-1] }, $meta->{'current'} = {}
+    }
     elsif ( !$INLINE_TAG{ $tag } ) {
         $meta->{'in'}{'block'}[-1]--;
         push @{ $meta->{'stack'}[-1] }, $meta->{'current'} = {}
