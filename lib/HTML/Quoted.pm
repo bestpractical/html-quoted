@@ -130,20 +130,22 @@ sub handle_start {
     my ($self, $tag, $attr, $attrseq, $text) = @_;
 
     my $meta = $self->{'html_quoted_parser'};
+    my $stack = $meta->{'stack'};
+
     if ( $meta->{'in'}{'br'} ) {
         $meta->{'in'}{'br'} = 0;
-        push @{ $meta->{'stack'}[-1] }, $meta->{'current'} = {};
+        push @{ $stack->[-1] }, $meta->{'current'} = {};
     }
 
     if ( $tag eq 'blockquote' ) {
         my $new = [{ quote => 1, block => 1 }];
-        push @{ $meta->{'stack'}[-1] }, $new;
-        push @{ $meta->{'stack'} }, $new;
+        push @{ $stack->[-1] }, $new;
+        push @$stack, $new;
         $meta->{'current'} = $new->[0];
         $meta->{'in'}{'quote'}++;
         push @{ $meta->{'in'}{'block'} }, 0;
         $meta->{'current'}{'raw'} .= $text;
-        push @{ $meta->{'stack'}[-1] }, $meta->{'current'} = {};
+        push @{ $stack->[-1] }, $meta->{'current'} = {};
     }
     elsif ( $tag eq 'br' && !$meta->{'in'}{'block'}[-1] ) {
         $meta->{'current'}{'raw'} .= $text;
@@ -159,7 +161,7 @@ sub handle_start {
     elsif ( !$INLINE_TAG{ $tag } ) {
         if ( !$meta->{'in'}{'block'}[-1] ) {
             if ( keys %{ $meta->{'current'} } ) {
-                push @{ $meta->{'stack'}[-1] }, $meta->{'current'}
+                push @{ $stack->[-1] }, $meta->{'current'}
                     = { block => 1, raw => '' };
             } else {
                 $meta->{'current'}{'block'} = 1;
@@ -177,29 +179,30 @@ sub handle_end {
     my ($self, $tag, $text) = @_;
 
     my $meta = $self->{'html_quoted_parser'};
+    my $stack = $meta->{'stack'};
 
     if ( $meta->{'in'}{'br'} && $tag ne 'br' ) {
         $meta->{'in'}{'br'} = 0;
-        push @{ $meta->{'stack'}[-1] }, $meta->{'current'} = {}
+        push @{ $stack->[-1] }, $meta->{'current'} = {}
     }
 
     $meta->{'current'}{'raw'} .= $text;
 
     if ( $tag eq 'blockquote' ) {
-        pop @{ $meta->{'stack'} };
-        push @{ $meta->{'stack'}[-1] }, $meta->{'current'} = { quote => 1 };
+        pop @$stack;
+        push @{ $stack->[-1] }, $meta->{'current'} = { quote => 1 };
         $meta->{'in'}{'quote'}--;
     }
     elsif ( $tag eq 'br' ) {
         $meta->{'in'}{'br'} = 0;
-        push @{ $meta->{'stack'}[-1] }, $meta->{'current'} = {}
+        push @{ $stack->[-1] }, $meta->{'current'} = {}
     }
     elsif ( $tag eq 'p' ) {
-        push @{ $meta->{'stack'}[-1] }, $meta->{'current'} = {}
+        push @{ $stack->[-1] }, $meta->{'current'} = {}
     }
     elsif ( !$INLINE_TAG{ $tag } ) {
         $meta->{'in'}{'block'}[-1]--;
-        push @{ $meta->{'stack'}[-1] }, $meta->{'current'} = {}
+        push @{ $stack->[-1] }, $meta->{'current'} = {}
             unless $meta->{'in'}{'block'}[-1];
     }
 }
