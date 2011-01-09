@@ -140,7 +140,7 @@ sub handle_start {
     if ( $tag eq 'blockquote' ) {
         my $new = [{ quote => 1, block => 1 }];
         push @{ $stack->[-1] }, $new;
-        push @$stack, $new;
+        push @$stack, $new; # HACK: everything pushed into this
         $meta->{'current'} = $new->[0];
         $meta->{'in'}{'quote'}++;
         push @{ $meta->{'in'}{'block'} }, 0;
