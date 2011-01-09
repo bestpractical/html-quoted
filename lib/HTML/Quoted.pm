@@ -159,16 +159,13 @@ sub handle_start {
         $meta->{'in'}{'br'} = 1;
     }
     elsif ( !$INLINE_TAG{ $tag } ) {
-        if ( !$meta->{'in'}{'block'}[-1] ) {
-            if ( keys %{ $meta->{'current'} } ) {
-                push @{ $stack->[-1] }, $meta->{'current'}
-                    = { block => 1, raw => '' };
-            } else {
-                $meta->{'current'}{'block'} = 1;
-            }
+        if ( !$meta->{'in'}{'block'}[-1] && keys %{ $meta->{'current'} } ) {
+            push @{ $stack->[-1] }, $meta->{'current'} = { raw => '' };
         }
-        $meta->{'in'}{'block'}[-1]++;
+        $meta->{'current'}{'block'} = 1;
         $meta->{'current'}{'raw'} .= $text;
+
+        $meta->{'in'}{'block'}[-1]++;
     }
     else {
         $meta->{'current'}{'raw'} .= $text;
